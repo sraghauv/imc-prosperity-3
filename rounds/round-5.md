@@ -119,8 +119,8 @@ quoting, and with the deadline in front of us the conservative call was to ship 
 price-only bot. The flow-throttle idea — defensive, nameless, and therefore much harder to
 overfit — is the one we would promote first given another run at it.
 
-For what the price-only bot did score, see [`results/backtests.md`](../results/backtests.md): the
-full round-5 window reproduces at **+789,066**, with the best single day at +310,761.
+The price-only bot is what carried the team to 59th of 12,500+ in the final standings. The
+counterparty signal remains the biggest piece of edge this repo identified and did not take.
 
 ## Files
 

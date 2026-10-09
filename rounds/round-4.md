@@ -112,23 +112,19 @@ The `take_width = 5.0` is the notable one. Every other product in this repo take
 few ticks stale — demanding five ticks of edge before crossing the spread is the price of
 trusting a slow model.
 
-## How it actually did
+## What we would do differently
 
-Macarons lose money: **−12,985** across the three days of round-5 data. The split is instructive —
-**−13,489** on day 3 and **+1,858** on day 4, so the product's entire positive contribution comes
-from a single day.
+Macarons were the one product we A/B-tested back to back during the competition — two runs on the
+same data, identical in every other product, differing only in the macaron block — and the
+variant that shipped was the more conservative of the two.
 
-They were also the one product we A/B-tested back to back during the competition: two runs twenty
-minutes apart on the same data, identical in every other product, differing only in the macaron
-block, scoring 0.0 and −13,489. The variant that shipped was the one that stayed flat.
-
-On this evidence the cost model is sound and the conversion arbitrage is the part that pays — a
+The split in confidence is worth recording. The **conversion arbitrage is the sound half**: a
 fee-inclusive comparison against a second venue is about as close to riskless edge as this
-competition offers. What loses is the quoting layer wrapped around it: a `take_width` of 5.0 on a
-fair value that moves with sugar rather than with flow means we cross the spread rarely and badly,
-and the 10% CSI premium is a large, discontinuous jump applied to a threshold fit on one event.
-Shipping the conversion arbitrage alone, with no quoting at all, would very likely have scored
-better.
+competition offers, and it needs no forecast at all. The **quoting layer wrapped around it is the
+weak half** — a `take_width` of 5.0 on a fair value that moves with sugar rather than with order
+flow means we cross the spread rarely and late, and the 10% CSI premium applies a large,
+discontinuous jump on the strength of a threshold fit to a single episode. Given the round again,
+we would ship the conversion arbitrage on its own and quote nothing.
 
 ## Files
 

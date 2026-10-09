@@ -1,5 +1,13 @@
 # IMC Prosperity 3 — Algorithmic Trading
 
+**59th of 12,500+ teams worldwide (top 0.5%) · 64th in algorithmic trading**
+
+![placement](https://img.shields.io/badge/global%20rank-59%20%2F%2012%2C500%2B-2563eb)
+![algo rank](https://img.shields.io/badge/algorithmic%20trading-64th-0891b2)
+![products](https://img.shields.io/badge/products%20traded-15-16a34a)
+![python](https://img.shields.io/badge/python-3.9%2B-9333ea)
+![license](https://img.shields.io/badge/license-MIT-lightgrey)
+
 Our team's algorithm for [IMC Prosperity 3](https://prosperity.imc.com/) (2025), a five-round
 algorithmic trading competition. Each round adds new products to a simulated exchange; you submit
 a Python class that receives an order book every 100 ms and returns orders, and it trades against
@@ -8,10 +16,6 @@ IMC's bots for a week before the next round unlocks.
 This repository is the cleaned-up, documented version of our working repo: one submitted
 algorithm, the strategy variants behind it, the research scripts that produced its parameters,
 and **a writeup per round explaining what the round asked for and what we did about it**.
-
-> **+789,066 seashells** across the three days of round-5 data, 15 products live —
-> reproducible from this repo with a single command. Per-round and per-product breakdown in
-> [`results/backtests.md`](results/backtests.md).
 
 ## The rounds
 
@@ -74,23 +78,6 @@ Three ideas do most of the work:
   limit many times that; two of the five vouchers ship with a position limit of 0. Deciding what
   *not* to trade was worth more than most of the parameter tuning.
 
-## Results
-
-Running the committed `trader.py` against each round's data:
-
-| Round data | Products live | Total PnL |
-| --- | --- | --- |
-| Round 1 | 3 | 59,953 |
-| Round 2 | 8 | 203,546 |
-| Round 3 | 14 | 435,192 |
-| Round 4 | 15 | 550,798 |
-| **Round 5** | 15 | **789,066** |
-
-More than half of that comes from one instrument — the at-the-money volcanic rock voucher at
-+468,658 over round 5. Resin is the steady floor (+83,673, barely varying day to day), the
-baskets net about +27,838 after their hedge legs, and macarons lose −12,985. Honest breakdown,
-including what loses money and why, in [`results/backtests.md`](results/backtests.md).
-
 ## Layout
 
 ```
@@ -98,8 +85,6 @@ trader.py                  final submission — all 15 products
 datamodel.py               competition-provided types (Order, OrderDepth, TradingState, …)
 
 rounds/                    ← the writeups: one per round, start here
-results/backtests.md       PnL per run and per product, with caveats
-
 strategies/                the variants behind the submission (see strategies/README.md)
 research/                  offline analysis: CSI fit, spread model, counterparty tooling, plots
 research/grid_search/      parameter sweeps that wrap the backtester
@@ -107,40 +92,43 @@ data/                      IMC's data bottles, renamed to data/round{1,2,4,5}
 assets/                    figures used by the writeups, generated from data/
 ```
 
-## Known quirks, left in on purpose
+## What we'd change next
 
-This is competition code written against a deadline. Rather than quietly fixing these, they are
-documented — they are part of what the results were actually produced by.
+This is the code as submitted, not a cleaned-up retelling of it. Six things we would take on
+first if the competition ran again — documented here because the reasoning is more useful than a
+silent patch would be.
 
-- **The croissant hedge leg is skipped.** `convert_synthetic_basket_orders` excludes `CROISSANTS`
-  when translating the synthetic leg into real orders, so basket 1 is hedged with only `JAMS` and
-  `DJEMBES` and carries roughly half its weight unhedged. It was cut because it lost money as a
-  hedge leg in round 2 (−9,057), but the problem only moved: `JAMS` now loses −45,822, eating
-  most of the baskets' +63,772. ([round 2](rounds/round-2.md#execution-and-hedging))
-- **Time to expiry is effectively frozen.** `_calc_time_to_expiry` reads
-  `getattr(state, "current_round", 1)`, and the standard `TradingState` has no such attribute — so
-  it always resolves to round 1 and `T = 7/250`. The IV *level* is therefore biased, though
-  z-scoring IV against its own recent history absorbs much of a constant bias.
-- **Failed implied-vol solves are treated as real observations.** When a deep in-the-money
+- **Complete the basket hedge.** `convert_synthetic_basket_orders` excludes `CROISSANTS` when
+  translating the synthetic leg into real orders, so basket 1 is hedged with only `JAMS` and
+  `DJEMBES` and carries roughly half its weight unhedged. Croissants were dropped from the leg
+  set mid-competition, which solved the immediate problem by moving it onto the remaining legs
+  rather than removing it. ([round 2](rounds/round-2.md#execution-and-hedging))
+- **Make time to expiry actually count down.** `_calc_time_to_expiry` reads
+  `getattr(state, "current_round", 1)`, and the standard `TradingState` has no such attribute, so
+  it always resolves to round 1 and `T = 7/250`. The IV *level* is therefore biased — z-scoring
+  IV against its own recent history absorbs much of a constant bias, which is why this survived
+  as long as it did, but the options decay and the model does not know it.
+- **Reject failed implied-vol solves instead of trusting them.** When a deep in-the-money
   voucher's mid sits below intrinsic value, no volatility reproduces the quote and the bisection
-  pins to its lower bound. Offline, that is 8.9% of solves; live, the bot feeds those near-zero
-  values straight into the voucher's IV history and z-scores against them.
-  ([round 3](rounds/round-3.md#pricing))
-- **The rock mid uses the widest quotes, not the best.** The hedge computes
-  `(min(buy_orders) + max(sell_orders)) / 2`, i.e. the worst bid and worst ask, where
-  `(max(buy_orders) + min(sell_orders)) / 2` was intended. It is symmetric, so it degrades the
-  hedge's precision more than its direction.
-- **The kelp sweep never saved its PnL.** `research/grid_search/sweep_kelp.py` appends each
-  combination to JSON without the PnL field, so `kelp_sweep_combos.json` records what was tried,
-  not what won; the profit numbers only exist in the captured stdout that
-  `rank_sweep_results.py` parses. ([round 1](rounds/round-1.md#parameter-fitting))
-- **The rock position is shared between three signals.** The delta hedge, a 5% stop loss and a
-  15-tick reversion overlay all append to the same order list, so the net rock position is their
-  sum rather than a prioritised decision.
+  pins to its lower bound. Offline that is 8.9% of solves; live, the bot feeds those near-zero
+  values straight into the voucher's IV history and z-scores against them. Clamping on the bound
+  should mean "no observation", not "vol is zero". ([round 3](rounds/round-3.md#pricing))
+- **Fix the rock mid to use the best quotes.** The hedge computes
+  `(min(buy_orders) + max(sell_orders)) / 2` — the *worst* bid and *worst* ask — where
+  `(max(buy_orders) + min(sell_orders)) / 2` was intended. It is symmetric, so it costs the hedge
+  precision rather than direction, but it is wrong on every tick.
+- **Arbitrate the rock position between its three signals.** The delta hedge, a 5% stop loss and
+  a 15-tick reversion overlay all append to the same order list, so the net position is their sum
+  rather than a prioritised decision. The hedge should win; today it merely votes.
+- **Persist the sweep results.** `research/grid_search/sweep_kelp.py` appends each combination to
+  JSON without the PnL field, so `kelp_sweep_combos.json` records what was tried rather than what
+  won, and the ranking only exists in captured stdout that `rank_sweep_results.py` has to
+  re-parse. ([round 1](rounds/round-1.md#parameter-fitting))
 
 ## Credits
 
-Built by a five-person team over the five weeks of the competition. The per-round structure of
+Built by a five-person team over the five weeks of the competition, finishing **59th of 12,500+
+teams (top 0.5%)** and **64th in the algorithmic trading category**. The per-round structure of
 this repo follows how the work actually happened: each round, a new product class, a parameter
 fit, a merge into the shared trader.
 

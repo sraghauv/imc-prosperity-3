@@ -86,9 +86,7 @@ Three parameter choices carry most of the weight:
 - **Resin quotes wide (`default_edge = 4`) and takes narrow (`take_width = 1`).** When fair value
   is a known constant, there is no reason to compete for queue position — just sit far out and
   get paid by anyone who needs immediacy. With the mid confined to a seven-tick band all week, a
-  four-tick edge is enormous relative to the product's actual volatility, and it still fills:
-  resin is the most profitable round-1 product by a factor of two
-  ([results](../results/backtests.md)).
+  four-tick edge is enormous relative to the product's actual volatility — and it still fills.
 - **Squid ink is capped at 4 units.** Not 50, not 20. The product's swings are large enough that
   position size, not spread capture, dominates PnL. Capping the position is a cheaper way to
   control that risk than trying to forecast the swings.

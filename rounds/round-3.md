@@ -95,13 +95,8 @@ Two decisions stand out:
 - **Two strikes ship with a position limit of zero.** `9500` and `10250` are fully configured but
   cannot trade. Setting the limit to 0 rather than deleting the config is a deliberate kill
   switch — the strikes stayed in the pricing loop (and so kept contributing deltas) while being
-  removed from risk.
-
-The results justify both calls, and then some. Across round 5, `VOUCHER_10000` returns
-**+468,658** and `VOUCHER_9750` **+124,747** — together 70% of the entire book's gross PnL. The
-one live wing, `VOUCHER_10500`, is the only voucher that loses money (**−8,626**) despite its
-raised z = 2.0 threshold, which says the threshold was the right instinct and still not enough:
-it belonged in the disabled set with the other two.
+  removed from risk. Which strikes were disabled changed between versions as the week went on;
+  the two near-the-money strikes were the ones we kept conviction in throughout.
 
 ## Delta hedging
 
@@ -128,8 +123,8 @@ tick, so it is correct only to first order and only for as long as the mid is cl
 
 Both emit orders into the same list as the hedge, so on any given tick the rock position is the
 net of "what the options require" and "what the reversion signal wants". That coupling is the
-least clean part of the design — see the known-quirks section in the
-[overview](../README.md#known-quirks-left-in-on-purpose).
+least clean part of the design — see
+[what we'd change next](../README.md#what-wed-change-next) in the overview.
 
 ## Files
 

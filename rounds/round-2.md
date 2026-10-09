@@ -108,18 +108,16 @@ if asset == Product.CROISSANTS:
 ```
 
 So the shipped bot hedges the basket with only part of its replicating portfolio and carries the
-croissant exposure outright. The evolution is visible in the logs: the round-2 version
-[`strategies/round2_basket_arbitrage.py`](../strategies/round2_basket_arbitrage.py) *did* trade
-croissants as a hedge leg and lost **−9,057** on them in that round's backtest, against
-**+23,214** on basket 1. They were cut from the leg set afterwards, and in the final trader
-`CROISSANTS` PnL is exactly **0** — the product is never touched.
+croissant exposure outright. The evolution is visible across the versions here: the round-2
+trader [`strategies/round2_basket_arbitrage.py`](../strategies/round2_basket_arbitrage.py) *did*
+place croissant legs, and croissants were cut from the leg set afterwards. In the final trader
+the product is never touched at all.
 
-That trade-off did not go away, it moved. Over round 5 the two baskets earn **+63,772** between
-them while the surviving hedge legs give back **−35,934** (`JAMS` −45,822, `DJEMBES` +9,888), so
-the basket complex nets about **+27,838** — more than half the gross consumed by the replication,
-and roughly half of basket 1's weight now carried unhedged. This is the honest status of the
-"arbitrage": it is a hedged directional position whose hedge is both incomplete and expensive.
-Full numbers in [`results/backtests.md`](../results/backtests.md).
+Cutting the leg did not remove the exposure, it redistributed it — the replication is now carried
+by `JAMS` and `DJEMBES` alone, and roughly half of basket 1's weight is unhedged. That is the
+honest status of this "arbitrage": a hedged directional position whose hedge is both incomplete
+and, because the remaining legs have to move more size to stand in for the missing one, more
+expensive than the clean version would be.
 
 The constituents are never quoted on their own. They exist in the strategy purely as hedge legs.
 
