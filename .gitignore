@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
+
+# Backtester output — regenerate with `prosperity3bt trader.py <round>`
+backtests/
+*.log
+output.txt
+temp_trader.py
+results_*.log
+
+# Generated research output
+by_name/
+plots/
+out/

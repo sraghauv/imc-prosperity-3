@@ -1,0 +1,23 @@
+{
+  "PICNIC_BASKET1": {
+    "default_spread_mean": 0.0,
+    "spread_std_window": 30,
+    "zscore_threshold": 2.0,
+    "target_position": 30,
+    "basket_constituents": {
+      "CROISSANTS": 6,
+      "JAMS": 3,
+      "DJEMBES": 1
+    }
+  },
+  "PICNIC_BASKET2": {
+    "default_spread_mean": 0.0,
+    "spread_std_window": 45,
+    "zscore_threshold": 2.5,
+    "target_position": 30,
+    "basket_constituents": {
+      "CROISSANTS": 4,
+      "JAMS": 2
+    }
+  }
+}

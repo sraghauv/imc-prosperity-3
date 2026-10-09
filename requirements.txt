@@ -1,0 +1,11 @@
+# Backtester (open-source community backtester for IMC Prosperity 3)
+prosperity3bt
+
+# Trader runtime — the submitted algorithm only needs these
+jsonpickle
+numpy
+
+# Research scripts and notebooks
+pandas
+matplotlib
+scipy
